@@ -1,0 +1,30 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "What is tidymodels",
+    "section": "",
+    "text": "topepo.github.io/2024-workweek\n\n\n\n\nlab_data &lt;- \n  two_class_dat %&gt;% \n  setNames(c(\"lab_test_1\", \"lab_test_2\", \"disease\")) %&gt;% \n  mutate(\n    disease = ifelse(disease == \"Class1\", \"yes\", \"no\"),\n    disease = factor(disease, levels = c(\"yes\", \"no\")))\n\ngrid_n &lt;- 200\ngrid &lt;- crossing(\n  lab_test_1 = seq(min(lab_data$lab_test_1), max(lab_data$lab_test_1), length.out = grid_n),\n  lab_test_2 = seq(min(lab_data$lab_test_2), max(lab_data$lab_test_2), length.out = grid_n))\n\n\n\nTwo laboratory tests are used to predict whether someone has a specific infectious disease.\n\nggplot(lab_data, aes(lab_test_1, lab_test_2, col = disease, pch = disease)) + \n  geom_point(cex = 2, alpha = 1 / 2) + \n  coord_equal()\n\n\n\np &lt;- \n  ggplot(lab_data, aes(lab_test_1, lab_test_2, col = disease, pch = disease)) + \n  geom_point(cex = 2, alpha = 1 / 2) + \n  coord_equal()\n\n\n\n\n\n\n\n\n\ncart_fit &lt;- \n  decision_tree() %&gt;% \n  set_mode(\"classification\") %&gt;% \n  fit(disease ~ ., data = lab_data)"
+  },
+  {
+    "objectID": "index.html#a-basic-example",
+    "href": "index.html#a-basic-example",
+    "title": "What is tidymodels",
+    "section": "",
+    "text": "lab_data &lt;- \n  two_class_dat %&gt;% \n  setNames(c(\"lab_test_1\", \"lab_test_2\", \"disease\")) %&gt;% \n  mutate(\n    disease = ifelse(disease == \"Class1\", \"yes\", \"no\"),\n    disease = factor(disease, levels = c(\"yes\", \"no\")))\n\ngrid_n &lt;- 200\ngrid &lt;- crossing(\n  lab_test_1 = seq(min(lab_data$lab_test_1), max(lab_data$lab_test_1), length.out = grid_n),\n  lab_test_2 = seq(min(lab_data$lab_test_2), max(lab_data$lab_test_2), length.out = grid_n))\n\n\n\nTwo laboratory tests are used to predict whether someone has a specific infectious disease.\n\nggplot(lab_data, aes(lab_test_1, lab_test_2, col = disease, pch = disease)) + \n  geom_point(cex = 2, alpha = 1 / 2) + \n  coord_equal()\n\n\n\np &lt;- \n  ggplot(lab_data, aes(lab_test_1, lab_test_2, col = disease, pch = disease)) + \n  geom_point(cex = 2, alpha = 1 / 2) + \n  coord_equal()"
+  },
+  {
+    "objectID": "index.html#fit-a-classification-tree",
+    "href": "index.html#fit-a-classification-tree",
+    "title": "What is tidymodels",
+    "section": "",
+    "text": "cart_fit &lt;- \n  decision_tree() %&gt;% \n  set_mode(\"classification\") %&gt;% \n  fit(disease ~ ., data = lab_data)"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  }
+]

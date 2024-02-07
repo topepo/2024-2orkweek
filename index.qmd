@@ -1,0 +1,474 @@
+---
+title: "What is tidymodels"
+author: "Max Kuhn"
+title-slide-attributes:
+  data-background-image: figures/hex_wall.png
+  data-background-size: contain
+  data-background-opacity: "0.2"
+---
+
+```{r}
+#| label: startup
+#| include: false
+
+library(tidymodels)
+library(gganimate)
+library(partykit)
+library(censored)
+
+# ------------------------------------------------------------------------------
+
+tidymodels_prefer()
+theme_set(theme_bw())
+options(pillar.advice = FALSE, pillar.min_title_chars = Inf)
+
+# ------------------------------------------------------------------------------
+
+light_bg <- "#fcfefe" # from aml4td.scss
+
+# ------------------------------------------------------------------------------
+# ggplot stuff
+
+theme_transparent <- function(...) {
+
+  ret <- ggplot2::theme_bw(...)
+
+  transparent_rect <- ggplot2::element_rect(fill = "transparent", colour = NA)
+  ret$panel.background  <- transparent_rect
+  ret$plot.background   <- transparent_rect
+  ret$legend.background <- transparent_rect
+  ret$legend.key        <- transparent_rect
+
+  ret$legend.position <- "top"
+
+  ret
+}
+
+theme_set(theme_transparent())
+```
+
+## Who is tidymodels? 
+
+:::: {.columns}
+
+::: {.column width="50%"}
+```{r}
+#| echo: false
+#| out-width: "50%"
+knitr::include_graphics("figures/max.png")
+```
+```{r}
+#| echo: false
+#| out-width: "50%"
+knitr::include_graphics("figures/hannah.png")
+```
+
+:::
+
+::: {.column width="50%"}
+```{r}
+#| echo: false
+#| out-width: "50%"
+knitr::include_graphics("figures/emil.png")
+```
+```{r}
+#| echo: false
+#| out-width: "50%"
+knitr::include_graphics("figures/simon.png")
+```
+
+:::
+
+::::
+
+# tidymodels: Our job is to make modeling data with R <span style="color:LightGray;"><strike> suck less</strike></span> better.
+
+# _It's actually pretty good_
+
+# "Modeling" includes everything from classical statistical methods to machine learning. 
+
+
+## A basic example
+
+```{r}
+#| label: rename-data
+#| include: false
+
+lab_data <- 
+  two_class_dat %>% 
+  setNames(c("lab_test_1", "lab_test_2", "disease")) %>% 
+  mutate(
+    disease = ifelse(disease == "Class1", "yes", "no"),
+    disease = factor(disease, levels = c("yes", "no")))
+
+grid_n <- 200
+grid <- crossing(
+  lab_test_1 = seq(min(lab_data$lab_test_1), max(lab_data$lab_test_1), length.out = grid_n),
+  lab_test_2 = seq(min(lab_data$lab_test_2), max(lab_data$lab_test_2), length.out = grid_n))
+```
+
+:::: {.columns}
+
+::: {.column width="50%"}
+Two laboratory tests are used to predict whether someone has a specific infectious disease. 
+
+(these are real data)
+
+<br>
+
+
+```{r}
+#| label: plot-code
+#| eval: false
+library(tidymodels)
+lab_data %>% 
+  ggplot(
+    aes(lab_test_1, lab_test_2, 
+        col = disease, pch = disease)) + 
+  geom_point(cex = 2, alpha = 1 / 2) + 
+  coord_equal()
+```
+:::
+
+::: {.column width="50%"}
+
+```{r}
+#| label: plot-data
+#| echo: false
+#| out-width: "100%"
+#| fig-width: 4
+#| fig-height: 4
+#| fig-align: "center"
+
+p <- 
+  ggplot(lab_data, aes(lab_test_1, lab_test_2)) + 
+  geom_point(aes(col = disease, pch = disease), 
+             cex = 2, alpha = 1 / 2) + 
+  coord_equal()
+print(p)
+```
+
+:::
+
+::::
+
+
+## Fit a classification tree
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+```{r}
+#| label: cart-fit
+cart_fit <- 
+  decision_tree() %>% 
+  set_mode("classification") %>% 
+  fit(disease ~ ., data = lab_data)
+```
+:::
+
+::: {.column width="50%"}
+
+
+```{r}
+#| label: cart-tree
+#| echo: false
+#| out-width: "100%"
+#| fig-width: 8
+#| fig-height: 8
+#| fig-align: "center"
+#| 
+cart_fit %>% 
+  extract_fit_engine() %>% 
+  partykit::as.party() %>% 
+  plot()
+```
+:::
+
+::::
+
+
+## Fit a classification tree
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+```{r}
+#| label: cart-boundary-code
+cart_fit <- 
+  decision_tree() %>% 
+  set_mode("classification") %>% 
+  fit(disease ~ ., data = lab_data)
+```
+:::
+
+::: {.column width="50%"}
+
+
+```{r}
+#| label: cart-boundaries
+#| echo: false
+#| out-width: "100%"
+#| fig-width: 4
+#| fig-height: 4
+#| fig-align: "center"
+
+cart_grid <- augment(cart_fit, grid)
+p + 
+  geom_contour(data = cart_grid, aes(z = .pred_yes), 
+               breaks =  1 / 2, col = "black", linewidth = 1.2)
+```
+
+:::
+
+::::
+
+## Maybe try a neural networks
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+```{r}
+#| label: nnet-boundary-code
+nnet_fit <- 
+  mlp(hidden_units = 5, penalty = 0.1) %>% 
+  set_mode("classification") %>% 
+  fit(disease ~ ., data = lab_data)
+```
+:::
+
+::: {.column width="50%"}
+
+
+```{r}
+#| label: nnet-boundaries
+#| echo: false
+#| out-width: "100%"
+#| fig-width: 4
+#| fig-height: 4
+#| fig-align: "center"
+
+nnet_grid <- augment(nnet_fit, grid)
+p + 
+  geom_contour(data = nnet_grid, aes(z = .pred_yes), 
+               breaks =  1 / 2, col = "black", linewidth = 1.2)
+```
+
+:::
+
+::::
+
+## Or another model that you've never used
+
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+```{r}
+#| label: mars-boundary-code
+mars_fit <- 
+  mars() %>% 
+  set_mode("classification") %>% 
+  fit(disease ~ ., data = lab_data)
+```
+
+<br>
+
+
+MARS = multivariate adaptive regression splines
+
+
+:::
+
+::: {.column width="50%"}
+
+
+```{r}
+#| label: mars-boundaries
+#| echo: false
+#| out-width: "100%"
+#| fig-width: 4
+#| fig-height: 4
+#| fig-align: "center"
+
+mars_grid <- augment(mars_fit, grid)
+p + 
+  geom_contour(data = mars_grid, aes(z = .pred_yes), 
+               breaks =  1 / 2, col = "black", linewidth = 1.2)
+```
+
+:::
+
+::::
+
+
+
+## We have a lot of tools to optimize models
+
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+```{r}
+#| label: nnet-opt-code
+#| eval: false
+
+set.seed(1)
+nnet_tune <- 
+  mlp(
+    hidden_units = tune(), 
+    penalty = tune()
+  ) %>% 
+  set_mode("classification") %>% 
+  tune_grid(
+    disease ~ ., 
+    resamples= vfold_cv(lab_data), 
+    grid = 10)
+```
+
+```{r}
+#| label: nnet-opt-animate
+#| include: false
+#| cache: true
+
+ctrl <- control_grid(extract = function(x) augment(x, grid))
+
+set.seed(383)
+nnet_tune <- 
+  mlp(hidden_units = tune(), penalty = tune()) %>% 
+  set_mode("classification") %>% 
+  tune_grid(disease ~ ., resamples= vfold_cv(lab_data), control = ctrl, grid = 10)
+
+nnet_preds <- 
+  map_dfr(nnet_tune$.extracts, ~ .x %>% unnest(cols = .extracts))
+
+nnet_anime <- 
+  nnet_preds %>% 
+  ggplot(aes(lab_test_1, lab_test_2)) + 
+  geom_contour(aes(z = .pred_yes), breaks =  1 / 2, col = "black", linewidth = 1.2) + 
+  geom_point(data = lab_data, aes( col = disease, pch = disease),
+             cex = 2, alpha = 1 / 2) +
+  transition_states(.config) + 
+  coord_equal()
+
+animate(nnet_anime, width = 400, height = 400, res = 72*1.2, dev = "png") 
+
+anim_save("figures/nnet_anime.gif")
+```
+:::
+
+::: {.column width="50%"}
+
+
+```{r}
+#| label: nnet-opt-boundaries
+#| echo: false
+#| out-width: "100%"
+#| fig-width: 4
+#| fig-height: 4
+#| fig-align: "center"
+
+knitr::include_graphics("figures/nnet_anime.gif")
+```
+
+:::
+
+::::
+
+
+## Strong points
+
+ - Many important guard rails
+ - Very good at feature engineering (RECIPES!!!)
+ - Parallel processing and server-based computations
+ - Leverage other frameworks: tensorflow, torch, h2o, spark (some)
+ - Great documentation
+   - [`tidymodels.org`](https://www.tidymodels.org/)
+   - _Tidy Modeling with R_ ([`tmwr.org`](https://www.tmwr.org/))
+   - [`workshops.tidymodels.org`](https://workshops.tidymodels.org/)
+ 
+ 
+## Latest feature: survival analysis
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+Censored data:
+
+ - "My food was delivered 27m after I ordered it" (complete)
+ - "I ordered my food 12m ago but it's not here yet" (censored)
+
+This requires specialized tools to fit and evaluate the quality of models. 
+
+:::
+
+::: {.column width="5%"}
+
+:::
+
+::: {.column width="45%"}
+
+Example of oblique random forest predictions for customer churn:
+
+
+```{r}
+#| label: churn
+#| echo: false
+#| out-width: "100%"
+#| fig-width: 5
+#| fig-height: 4
+#| fig-align: "center"
+data("mlc_churn")
+
+churn_data <-
+  mlc_churn %>%
+  mutate(
+    churned = ifelse(churn == "yes", 1, 0),
+    event_time = Surv(account_length, churned)
+  ) %>%
+  select(-churned, account_length)
+
+
+set.seed(6941)
+churn_split <- initial_split(churn_data)
+churn_tr <- training(churn_split)
+churn_te <- testing(churn_split)
+
+# ------------------------------------------------------------------------------
+
+set.seed(1970)
+rf_fit <-
+  rand_forest() %>%
+  set_mode("censored regression") %>%
+  set_engine("aorsf") %>% 
+  fit(event_time ~ ., churn_tr)
+
+augment(rf_fit, churn_te %>% slice(1:5), eval_time = 1:200) %>% 
+  add_rowindex() %>% 
+  select(.pred, .row) %>% 
+  unnest(cols = .pred) %>%
+  mutate(
+    employee = LETTERS[.row],
+    .prob_churn = 1 - .pred_survival
+  ) %>% 
+  ggplot(aes(.eval_time, .prob_churn, col = employee, group = employee)) + 
+  geom_step(direction = "vh", linewidth = 1.2, alpha = 3 / 4) +
+  labs(x = "Weeks", y = "Probability of Churn") +
+  theme(legend.position = "top")
+```
+
+:::
+
+::::
+ 
+

@@ -56,12 +56,11 @@ theme_set(theme_transparent())
 
 ## How do we make it better? 
 
-* Consistent and unsuprising APIs and outputs
+* Consistent and unsurprising APIs and outputs
 * Tidyverse-like syntax
 * Upgrade data analysis tools available to users
 
 (sort of like systems engineers for modeling)
-
 
 ## Who is tidymodels? 
 

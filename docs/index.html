@@ -11,7 +11,7 @@
   <meta name="generator" content="quarto-1.5.4">
 
   <meta name="author" content="Max Kuhn">
-  <title>What is tidymodels</title>
+  <title>What is tidymodels?</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -392,7 +392,7 @@
     <div class="slides">
 
 <section id="title-slide" data-background-image="figures/hex_wall.png" data-background-opacity="0.2" data-background-size="contain" class="quarto-title-block center">
-  <h1 class="title">What is tidymodels</h1>
+  <h1 class="title">What is tidymodels?</h1>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
@@ -402,6 +402,30 @@ Max Kuhn
 </div>
 </div>
 
+</section>
+<section id="tidymodels-our-job-is-to-make-modeling-data-with-r-suck-less-better." class="title-slide slide level1 center">
+<h1>tidymodels: Our job is to make modeling data with R <span style="color:LightGray;"><strike> suck less</strike></span> better.</h1>
+
+</section>
+
+<section id="its-actually-pretty-good" class="title-slide slide level1 center">
+<h1><em>It’s actually pretty good</em></h1>
+
+</section>
+
+<section>
+<section id="modeling-includes-everything-from-classical-statistical-methods-to-machine-learning." class="title-slide slide level1 center">
+<h1>“Modeling” includes everything from classical statistical methods to machine learning.</h1>
+
+</section>
+<section id="how-do-we-make-it-better" class="slide level2">
+<h2>How do we make it better?</h2>
+<ul>
+<li>Consistent and unsuprising APIs and outputs</li>
+<li>Tidyverse-like syntax</li>
+<li>Upgrade data analysis tools available to users</li>
+</ul>
+<p>(sort of like systems engineers for modeling)</p>
 </section>
 <section id="who-is-tidymodels" class="slide level2">
 <h2>Who is tidymodels?</h2>
@@ -447,21 +471,6 @@ Max Kuhn
 </div>
 </div>
 </section>
-<section id="tidymodels-our-job-is-to-make-modeling-data-with-r-suck-less-better." class="title-slide slide level1 center">
-<h1>tidymodels: Our job is to make modeling data with R <span style="color:LightGray;"><strike> suck less</strike></span> better.</h1>
-
-</section>
-
-<section id="its-actually-pretty-good" class="title-slide slide level1 center">
-<h1><em>It’s actually pretty good</em></h1>
-
-</section>
-
-<section>
-<section id="modeling-includes-everything-from-classical-statistical-methods-to-machine-learning." class="title-slide slide level1 center">
-<h1>“Modeling” includes everything from classical statistical methods to machine learning.</h1>
-
-</section>
 <section id="a-basic-example" class="slide level2">
 <h2>A basic example</h2>
 <div class="columns">
@@ -506,29 +515,6 @@ Max Kuhn
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="figures/cart-tree-1.svg" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section id="fit-a-classification-tree-1" class="slide level2">
-<h2>Fit a classification tree</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>cart_fit <span class="ot">&lt;-</span> </span>
-<span id="cb3-2"><a href=""></a>  <span class="fu">decision_tree</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb3-3"><a href=""></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-4"><a href=""></a>  <span class="fu">fit</span>(disease <span class="sc">~</span> ., <span class="at">data =</span> lab_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
 <p><img data-src="figures/cart-boundaries-1.svg" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
 </figure>
 </div>
@@ -542,10 +528,10 @@ Max Kuhn
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a>nnet_fit <span class="ot">&lt;-</span> </span>
-<span id="cb4-2"><a href=""></a>  <span class="fu">mlp</span>(<span class="at">hidden_units =</span> <span class="dv">5</span>, <span class="at">penalty =</span> <span class="fl">0.1</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-3"><a href=""></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb4-4"><a href=""></a>  <span class="fu">fit</span>(disease <span class="sc">~</span> ., <span class="at">data =</span> lab_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>nnet_fit <span class="ot">&lt;-</span> </span>
+<span id="cb3-2"><a href=""></a>  <span class="fu">mlp</span>(<span class="at">hidden_units =</span> <span class="dv">5</span>, <span class="at">penalty =</span> <span class="fl">0.01</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-3"><a href=""></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-4"><a href=""></a>  <span class="fu">fit</span>(disease <span class="sc">~</span> ., <span class="at">data =</span> lab_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">
@@ -560,47 +546,22 @@ Max Kuhn
 </div>
 </div>
 </section>
-<section id="or-another-model-that-youve-never-used" class="slide level2">
-<h2>Or another model that you’ve never used</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>mars_fit <span class="ot">&lt;-</span> </span>
-<span id="cb5-2"><a href=""></a>  <span class="fu">mars</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb5-3"><a href=""></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb5-4"><a href=""></a>  <span class="fu">fit</span>(disease <span class="sc">~</span> ., <span class="at">data =</span> lab_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p><br></p>
-<p>MARS = multivariate adaptive regression splines</p>
-</div><div class="column" style="width:50%;">
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figures/mars-boundaries-1.svg" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
 <section id="we-have-a-lot-of-tools-to-optimize-models" class="slide level2">
 <h2>We have a lot of tools to optimize models</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb6-2"><a href=""></a>nnet_tune <span class="ot">&lt;-</span> </span>
-<span id="cb6-3"><a href=""></a>  <span class="fu">mlp</span>(</span>
-<span id="cb6-4"><a href=""></a>    <span class="at">hidden_units =</span> <span class="fu">tune</span>(), </span>
-<span id="cb6-5"><a href=""></a>    <span class="at">penalty =</span> <span class="fu">tune</span>()</span>
-<span id="cb6-6"><a href=""></a>  ) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-7"><a href=""></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb6-8"><a href=""></a>  <span class="fu">tune_grid</span>(</span>
-<span id="cb6-9"><a href=""></a>    disease <span class="sc">~</span> ., </span>
-<span id="cb6-10"><a href=""></a>    <span class="at">resamples=</span> <span class="fu">vfold_cv</span>(lab_data), </span>
-<span id="cb6-11"><a href=""></a>    <span class="at">grid =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href=""></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb4-2"><a href=""></a>nnet_tune <span class="ot">&lt;-</span> </span>
+<span id="cb4-3"><a href=""></a>  <span class="fu">mlp</span>(</span>
+<span id="cb4-4"><a href=""></a>    <span class="at">hidden_units =</span> <span class="fu">tune</span>(), </span>
+<span id="cb4-5"><a href=""></a>    <span class="at">penalty =</span> <span class="fl">0.01</span></span>
+<span id="cb4-6"><a href=""></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-7"><a href=""></a>  <span class="fu">set_mode</span>(<span class="st">"classification"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-8"><a href=""></a>  <span class="fu">tune_grid</span>(</span>
+<span id="cb4-9"><a href=""></a>    disease <span class="sc">~</span> ., </span>
+<span id="cb4-10"><a href=""></a>    <span class="at">resamples=</span> <span class="fu">vfold_cv</span>(lab_data), </span>
+<span id="cb4-11"><a href=""></a>    <span class="at">grid =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div><div class="column" style="width:50%;">
 <div class="cell" data-layout-align="center">

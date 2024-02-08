@@ -1,5 +1,5 @@
 ---
-title: "What is tidymodels"
+title: "What is tidymodels?"
 author: "Max Kuhn"
 title-slide-attributes:
   data-background-image: figures/hex_wall.png
@@ -47,6 +47,22 @@ theme_transparent <- function(...) {
 theme_set(theme_transparent())
 ```
 
+
+# tidymodels: Our job is to make modeling data with R <span style="color:LightGray;"><strike> suck less</strike></span> better.
+
+# _It's actually pretty good_
+
+# "Modeling" includes everything from classical statistical methods to machine learning. 
+
+## How do we make it better? 
+
+* Consistent and unsuprising APIs and outputs
+* Tidyverse-like syntax
+* Upgrade data analysis tools available to users
+
+(sort of like systems engineers for modeling)
+
+
 ## Who is tidymodels? 
 
 :::: {.columns}
@@ -80,13 +96,6 @@ knitr::include_graphics("figures/simon.png")
 :::
 
 ::::
-
-# tidymodels: Our job is to make modeling data with R <span style="color:LightGray;"><strike> suck less</strike></span> better.
-
-# _It's actually pretty good_
-
-# "Modeling" includes everything from classical statistical methods to machine learning. 
-
 
 ## A basic example
 
@@ -160,42 +169,6 @@ print(p)
 ::: {.column width="50%"}
 
 ```{r}
-#| label: cart-fit
-cart_fit <- 
-  decision_tree() %>% 
-  set_mode("classification") %>% 
-  fit(disease ~ ., data = lab_data)
-```
-:::
-
-::: {.column width="50%"}
-
-
-```{r}
-#| label: cart-tree
-#| echo: false
-#| out-width: "100%"
-#| fig-width: 8
-#| fig-height: 8
-#| fig-align: "center"
-#| 
-cart_fit %>% 
-  extract_fit_engine() %>% 
-  partykit::as.party() %>% 
-  plot()
-```
-:::
-
-::::
-
-
-## Fit a classification tree
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-```{r}
 #| label: cart-boundary-code
 cart_fit <- 
   decision_tree() %>% 
@@ -235,7 +208,7 @@ p +
 ```{r}
 #| label: nnet-boundary-code
 nnet_fit <- 
-  mlp(hidden_units = 5, penalty = 0.1) %>% 
+  mlp(hidden_units = 5, penalty = 0.01) %>% 
   set_mode("classification") %>% 
   fit(disease ~ ., data = lab_data)
 ```
@@ -262,52 +235,6 @@ p +
 
 ::::
 
-## Or another model that you've never used
-
-
-
-:::: {.columns}
-
-::: {.column width="50%"}
-
-```{r}
-#| label: mars-boundary-code
-mars_fit <- 
-  mars() %>% 
-  set_mode("classification") %>% 
-  fit(disease ~ ., data = lab_data)
-```
-
-<br>
-
-
-MARS = multivariate adaptive regression splines
-
-
-:::
-
-::: {.column width="50%"}
-
-
-```{r}
-#| label: mars-boundaries
-#| echo: false
-#| out-width: "100%"
-#| fig-width: 4
-#| fig-height: 4
-#| fig-align: "center"
-
-mars_grid <- augment(mars_fit, grid)
-p + 
-  geom_contour(data = mars_grid, aes(z = .pred_yes), 
-               breaks =  1 / 2, col = "black", linewidth = 1.2)
-```
-
-:::
-
-::::
-
-
 
 ## We have a lot of tools to optimize models
 
@@ -320,12 +247,11 @@ p +
 ```{r}
 #| label: nnet-opt-code
 #| eval: false
-
 set.seed(1)
 nnet_tune <- 
   mlp(
     hidden_units = tune(), 
-    penalty = tune()
+    penalty = 0.01
   ) %>% 
   set_mode("classification") %>% 
   tune_grid(
@@ -343,9 +269,9 @@ ctrl <- control_grid(extract = function(x) augment(x, grid))
 
 set.seed(383)
 nnet_tune <- 
-  mlp(hidden_units = tune(), penalty = tune()) %>% 
+  mlp(hidden_units = tune(), penalty = 0.01) %>% 
   set_mode("classification") %>% 
-  tune_grid(disease ~ ., resamples= vfold_cv(lab_data), control = ctrl, grid = 10)
+  tune_grid(disease ~ ., resamples= vfold_cv(lab_data), control = ctrl, grid = tibble(hidden_units = 2:20))
 
 nnet_preds <- 
   map_dfr(nnet_tune$.extracts, ~ .x %>% unnest(cols = .extracts))
@@ -359,7 +285,7 @@ nnet_anime <-
   transition_states(.config) + 
   coord_equal()
 
-animate(nnet_anime, width = 400, height = 400, res = 72*1.2, dev = "png") 
+animate(nnet_anime, width = 400, height = 400, res = 72*1.2, dev = "png", duration = 20) 
 
 anim_save("figures/nnet_anime.gif")
 ```
@@ -458,13 +384,14 @@ augment(rf_fit, churn_te %>% slice(1:5), eval_time = 1:200) %>%
   select(.pred, .row) %>% 
   unnest(cols = .pred) %>%
   mutate(
-    employee = LETTERS[.row],
+    customer = LETTERS[.row],
     .prob_churn = 1 - .pred_survival
   ) %>% 
-  ggplot(aes(.eval_time, .prob_churn, col = employee, group = employee)) + 
+  ggplot(aes(.eval_time, .prob_churn, col = customer, group = customer)) + 
   geom_step(direction = "vh", linewidth = 1.2, alpha = 3 / 4) +
   labs(x = "Weeks", y = "Probability of Churn") +
-  theme(legend.position = "top")
+  theme(legend.position = "top") +
+  lims(y = 0:1)
 ```
 
 :::
